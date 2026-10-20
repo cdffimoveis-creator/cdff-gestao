@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDFF Gestão</title>
+<style>
+:root{--navy:#142b4a;--blue:#2457a7;--bg:#f3f6fb;--card:#fff;--text:#182235;--muted:#6c7789;--line:#e4e9f1;--green:#16865c;--red:#c83d4b;--amber:#a86b00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text)}
+header{background:var(--navy);color:white;padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:22px;letter-spacing:.3px}.brand span{display:block;font-size:12px;font-weight:500;opacity:.75;margin-top:4px}
+.wrap{max-width:1200px;margin:auto;padding:24px}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:26px;margin:0 0 6px}p{margin:0;color:var(--muted);line-height:1.45}.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--blue);color:white;font-weight:700;cursor:pointer}.btn.secondary{background:#eaf0fa;color:var(--navy)}.btn.danger{background:#fff0f1;color:var(--red)}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.metric,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 3px 12px #142b4a08}
+.metric .label{color:var(--muted);font-size:13px}.metric .num{font-size:30px;font-weight:800;margin-top:8px}.metric .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tab{border:1px solid var(--line);background:white;color:var(--muted);border-radius:999px;padding:9px 14px;cursor:pointer;font-weight:650}.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.panel h2{font-size:17px;margin:0 0 14px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select,input,select,textarea{font:inherit;border:1px solid #d8dfeb;border-radius:9px;padding:10px;background:white;color:var(--text);width:100%}.toolbar input{max-width:340px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.pill{display:inline-block;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;white-space:nowrap}.paid{background:#e3f6ed;color:var(--green)}.pending{background:#fff3d9;color:var(--amber)}.late{background:#ffe8eb;color:var(--red)}.actions{display:flex;gap:6px;flex-wrap:wrap}.mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 9px;cursor:pointer;font-size:12px;font-weight:700}.muted{color:var(--muted);font-size:13px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 6px}.field.full{grid-column:1/-1}.formactions{display:flex;gap:8px;margin-top:14px}.notice{background:#edf4ff;border:1px solid #d5e4ff;padding:12px 14px;border-radius:12px;color:#27456f;font-size:13px;margin-bottom:16px}
+.hidden{display:none!important}.empty{padding:28px;text-align:center;color:var(--muted)}footer{padding:25px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:800px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.wrap{padding:15px}header{padding:17px}.tablewrap{overflow:auto}table{min-width:760px}}
+@media(max-width:460px){.metrics{gap:8px}.metric{padding:13px}.metric .num{font-size:25px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header><div class="brand">CDFF Gestão <span>Administração de locações • Protótipo inicial</span></div><div style="font-size:13px;opacity:.85">Ambiente de demonstração · dados fictícios</div></header>
+<main class="wrap">
+  <div class="topline"><div><h1>Visão geral</h1><p>Controle de pagamentos, vencimentos e cobranças da imobiliária.</p></div><button class="btn" onclick="showTab('payments')">＋ Registrar pagamento</button></div>
+  <div class="notice"><b>Importante:</b> este protótipo salva dados somente neste navegador. Ainda não emite boletos, não consulta bancos e não envia cobranças reais.</div>
+  <section class="metrics">
+    <div class="metric"><div class="label">Contratos ativos</div><div class="num" id="mContracts">—</div><div class="sub">Locações cadastradas</div></div>
+    <div class="metric"><div class="label">Pagamentos confirmados</div><div class="num" id="mPaid">—</div><div class="sub">Neste mês</div></div>
+    <div class="metric"><div class="label">A vencer / pendentes</div><div class="num" id="mPending">—</div><div class="sub">Aguardando confirmação</div></div>
+    <div class="metric"><div class="label">Atrasados há 2+ dias</div><div class="num" id="mLate">—</div><div class="sub">Precisam de acompanhamento</div></div>
+  </section>
+  <nav class="tabs">
+    <button class="tab active" data-tab="dashboard" onclick="showTab('dashboard')">Painel</button>
+    <button class="tab" data-tab="payments" onclick="showTab('payments')">Pagamentos</button>
+    <button class="tab" data-tab="contracts" onclick="showTab('contracts')">Contratos / inquilinos</button>
+    <button class="tab" data-tab="owners" onclick="showTab('owners')">Proprietários</button>
+  </nav>
+  <section id="view-dashboard">
+    <div class="grid2">
+      <div class="panel"><h2>Precisam de atenção</h2><div id="attention"></div></div>
+      <div class="panel"><h2>Próximas tarefas</h2><div id="tasks"></div><p class="muted" style="margin-top:12px">O status de atraso é calculado pelo vencimento. Confirme os pagamentos recebidos diretamente pelo proprietário.</p></div>
+    </div>
+  </section>
+  <section id="view-payments" class="hidden">
+    <div class="panel"><h2>Controle mensal de pagamentos</h2><div class="toolbar"><input id="paymentSearch" placeholder="Buscar por inquilino, imóvel ou proprietário..." oninput="renderPayments()"><select id="paymentFilter" onchange="renderPayments()" style="max-width:210px"><option value="all">Todos os status</option><option value="Pago">Pago</option><option value="Pendente">Pendente</option><option value="Cobrar">Cobrar (2+ dias)</option></select><button class="btn secondary" onclick="newPayment()">＋ Adicionar mês</button></div><div class="tablewrap"><table><thead><tr><th>Inquilino / imóvel</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody id="paymentsBody"></tbody></table></div></div>
+  </section>
+  <section id="view-contracts" class="hidden">
+    <div class="panel"><h2>Contratos e inquilinos</h2><div class="toolbar"><input id="contractSearch" placeholder="Buscar contrato, inquilino ou imóvel..." oninput="renderContracts()"><button class="btn" onclick="openContractForm()">＋ Novo contrato</button></div><div class="tablewrap"><table><thead><tr><th>Inquilino</th><th>Imóvel</th><th>Proprietário</th><th>Aluguel</th><th>Vencimento</th><th>Ações</th></tr></thead><tbody id="contractsBody"></tbody></table></div></div>
+    <div class="panel hidden" id="contractFormPanel" style="margin-top:16px"><h2 id="contractFormTitle">Novo contrato</h2><form id="contractForm"><div class="formgrid">
+      <div class="field"><label>Nome do inquilino *</label><input name="tenant" required></div><div class="field"><label>Telefone (opcional)</label><input name="phone" placeholder="(11) 99999-9999"></div>
+      <div class="field"><label>Imóvel *</label><input name="property" required></div><div class="field"><label>Proprietário *</label><input name="owner" required></div>
+      <div class="field"><label>Aluguel mensal (R$) *</label><input name="rent" type="number" min="0" step=".01" required></div><div class="field"><label>Dia de vencimento (1–28)</label><input name="dueDay" type="number" min="1" max="28" value="10" required></div>
+    </div><div class="formactions"><button class="btn" type="submit">Salvar contrato</button><button class="btn secondary" type="button" onclick="closeContractForm()">Cancelar</button></div></form></div>
+  </section>
+  <section id="view-owners" class="hidden">
+    <div class="panel"><h2>Proprietários cadastrados</h2><p class="muted" style="margin-bottom:14px">Lista montada a partir dos contratos cadastrados. Na versão seguinte podemos adicionar dados bancários com acesso restrito.</p><div class="tablewrap"><table><thead><tr><th>Proprietário</th><th>Imóveis</th><th>Contratos</th><th>Aluguel mensal somado</th></tr></thead><tbody id="ownersBody"></tbody></table></div></div>
+  </section>
+</main>
+<footer>CDFF Gestão · Protótipo local · Não use dados reais nesta versão.</footer>
+<script>
+const STORAGE='cdffGestaoDemo_v1';
+const today=new Date(); today.setHours(0,0,0,0);
+function dateOffset(days){let d=new Date(today);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function money(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function seed(){return {
+ contracts:[
+ {id:1,tenant:'João Silva (DEMO)',phone:'',property:'Casa — Jardim Mitsutani (DEMO)',owner:'Proprietário A (DEMO)',rent:1500,dueDay:5},
+ {id:2,tenant:'Mariana Souza (DEMO)',phone:'',property:'Apartamento — Campo Limpo (DEMO)',owner:'Proprietário B (DEMO)',rent:1250,dueDay:25},
+ {id:3,tenant:'Carlos Oliveira (DEMO)',phone:'',property:'Casa — Embu das Artes (DEMO)',owner:'Proprietário A (DEMO)',rent:1800,dueDay:8}
+ ],
+ payments:[
+ {id:101,contractId:1,month:new Date().toISOString().slice(0,7),dueDate:dateOffset(-4),amount:1500,status:'Pago',paidDate:dateOffset(-3),method:'Confirmado manualmente'},
+ {id:102,contractId:2,month:new Date().toISOString().slice(0,7),dueDate:dateOffset(5),amount:1250,status:'Pendente',paidDate:'',method:''},
+ {id:103,contractId:3,month:new Date().toISOString().slice(0,7),dueDate:dateOffset(-3),amount:1800,status:'Pendente',paidDate:'',method:''}
+ ],nextContractId:4,nextPaymentId:104}}
+let db; try{db=JSON.parse(localStorage.getItem(STORAGE))||seed()}catch(e){db=seed()}
+function save(){localStorage.setItem(STORAGE,JSON.stringify(db));renderAll()}
+function contract(id){return db.contracts.find(c=>c.id===id)}
+function daysLate(p){if(p.status==='Pago')return 0;let d=new Date(p.dueDate+'T00:00:00');return Math.floor((today-d)/86400000)}
+function status(p){return p.status==='Pago'?'Pago':daysLate(p)>=2?'Cobrar':'Pendente'}
+function pill(s){let cls=s==='Pago'?'paid':s==='Cobrar'?'late':'pending';return `<span class="pill ${cls}">${s==='Cobrar'?'Atrasado · '+daysLate(currentPayment)+' dias':s}</span>`}
+let currentPayment=null;
+function showTab(tab){document.querySelectorAll('[id^="view-"]').forEach(el=>el.classList.add('hidden'));document.getElementById('view-'+tab).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));}
+function renderMetrics(){let ps=db.payments.filter(p=>p.month===new Date().toISOString().slice(0,7));document.getElementById('mContracts').textContent=db.contracts.length;document.getElementById('mPaid').textContent=ps.filter(p=>p.status==='Pago').length;document.getElementById('mPending').textContent=ps.filter(p=>status(p)==='Pendente').length;document.getElementById('mLate').textContent=ps.filter(p=>status(p)==='Cobrar').length}
+function paymentRow(p){let c=contract(p.contractId)||{};let s=status(p);return `<tr><td><b>${esc(c.tenant||'Contrato removido')}</b><br><span class="muted">${esc(c.property||'')}</span><br><span class="muted">Proprietário: ${esc(c.owner||'')}</span></td><td>${fmtDate(p.dueDate)}</td><td>${money(p.amount)}</td><td><span class="pill ${s==='Pago'?'paid':s==='Cobrar'?'late':'pending'}">${s==='Cobrar'?'Atrasado · '+daysLate(p)+' dias':s}</span></td><td><div class="actions">${p.status!=='Pago'?`<button class="mini" onclick="markPaid(${p.id})">✓ Confirmar pago</button>`:`<button class="mini" onclick="undoPaid(${p.id})">Desfazer</button>`}<button class="mini" onclick="draftReminder(${p.id})">Mensagem</button></div></td></tr>`}
+function renderPayments(){let q=(document.getElementById('paymentSearch')?.value||'').toLowerCase(),f=document.getElementById('paymentFilter')?.value||'all';let rows=db.payments.filter(p=>{let c=contract(p.contractId)||{},s=status(p);return [c.tenant,c.property,c.owner].join(' ').toLowerCase().includes(q)&&(f==='all'||(f==='Cobrar'?s==='Cobrar':s===f))}).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));document.getElementById('paymentsBody').innerHTML=rows.length?rows.map(paymentRow).join(''):`<tr><td colspan="5" class="empty">Nenhum pagamento encontrado.</td></tr>`}
+function renderAttention(){let late=db.payments.filter(p=>status(p)==='Cobrar');document.getElementById('attention').innerHTML=late.length?late.map(p=>{let c=contract(p.contractId)||{};return `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${esc(c.tenant||'')}</b><div class="muted">${esc(c.property||'')} · ${daysLate(p)} dia(s) de atraso · ${money(p.amount)}</div><button class="mini" style="margin-top:7px" onclick="draftReminder(${p.id})">Preparar cobrança</button></div>`}).join(''):'<div class="empty">Nenhum atraso de 2 dias ou mais. 🎉</div>'}
+function renderTasks(){let due=db.payments.filter(p=>p.status!=='Pago'&&daysLate(p)>=0&&daysLate(p)<2);let upcoming=db.payments.filter(p=>p.status!=='Pago'&&daysLate(p)<0&&daysLate(p)>=-5);let all=[...due.map(p=>({p,t:'Venceu recentemente'})),...upcoming.map(p=>({p,t:'Vence em até 5 dias'}))];document.getElementById('tasks').innerHTML=all.length?all.map(({p,t})=>{let c=contract(p.contractId)||{};return `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${esc(c.tenant||'')}</b><div class="muted">${t} · ${fmtDate(p.dueDate)} · ${money(p.amount)}</div></div>`}).join(''):'<div class="empty">Sem tarefas próximas.</div>'}
+function renderContracts(){let q=(document.getElementById('contractSearch')?.value||'').toLowerCase();let cs=db.contracts.filter(c=>[c.tenant,c.property,c.owner].join(' ').toLowerCase().includes(q));document.getElementById('contractsBody').innerHTML=cs.length?cs.map(c=>`<tr><td><b>${esc(c.tenant)}</b><br><span class="muted">${esc(c.phone||'Sem telefone')}</span></td><td>${esc(c.property)}</td><td>${esc(c.owner)}</td><td>${money(c.rent)}</td><td>Dia ${c.dueDay}</td><td><div class="actions"><button class="mini" onclick="generateMonth(${c.id})">＋ Criar mês</button><button class="mini" onclick="deleteContract(${c.id})">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="6" class="empty">Nenhum contrato cadastrado.</td></tr>'}
+function renderOwners(){let map={};db.contracts.forEach(c=>{if(!map[c.owner])map[c.owner]={props:new Set(),contracts:0,total:0};map[c.owner].props.add(c.property);map[c.owner].contracts++;map[c.owner].total+=Number(c.rent)});let rows=Object.entries(map);document.getElementById('ownersBody').innerHTML=rows.length?rows.map(([n,v])=>`<tr><td><b>${esc(n)}</b></td><td>${v.props.size}</td><td>${v.contracts}</td><td>${money(v.total)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Nenhum proprietário cadastrado.</td></tr>'}
+function renderAll(){renderMetrics();renderPayments();renderAttention();renderTasks();renderContracts();renderOwners()}
+function markPaid(id){let p=db.payments.find(p=>p.id===id);if(!p)return;if(!confirm('Confirmar que o pagamento foi recebido pelo proprietário?'))return;p.status='Pago';p.paidDate=new Date().toISOString().slice(0,10);p.method='Confirmado manualmente';save()}
+function undoPaid(id){let p=db.payments.find(p=>p.id===id);if(!p)return;if(!confirm('Desfazer a confirmação?'))return;p.status='Pendente';p.paidDate='';p.method='';save()}
+function draftReminder(id){let p=db.payments.find(p=>p.id===id),c=contract(p.contractId)||{};let msg=`Olá, ${c.tenant||'tudo bem'}? Aqui é da CDFF Imóveis. Consta em nosso controle que o aluguel do imóvel ${c.property||''}, com vencimento em ${fmtDate(p.dueDate)}, ainda está pendente. Se já realizou o pagamento diretamente ao proprietário, por favor desconsidere e nos envie a confirmação para atualizarmos o registro. Obrigado!`;let w=window.open('','_blank');if(w){w.document.write('<title>Mensagem de cobrança</title><textarea style="width:95%;height:220px;font:16px Arial;padding:12px">'+esc(msg)+'</textarea><p>Revise a mensagem antes de enviar. Esta página não envia mensagens automaticamente.</p>');}else alert(msg)}
+function newPayment(){let options=db.contracts.map(c=>`${c.id}: ${c.tenant} — ${c.property}`).join('\n');let id=prompt('Digite o ID do contrato:\n'+options);if(id===null)return;let c=contract(Number(id));if(!c){alert('ID não encontrado.');return}let due=prompt('Data de vencimento (AAAA-MM-DD):',dateOffset(c.dueDay-new Date().getDate()));if(!due)return;let month=due.slice(0,7);if(db.payments.some(p=>p.contractId===c.id&&p.month===month)){alert('Já existe pagamento deste contrato para este mês.');return}db.payments.push({id:db.nextPaymentId++,contractId:c.id,month,dueDate:due,amount:Number(c.rent),status:'Pendente',paidDate:'',method:''});save()}
+function generateMonth(id){let c=contract(id),month=new Date().toISOString().slice(0,7);if(db.payments.some(p=>p.contractId===id&&p.month===month)){alert('Já existe um pagamento para este contrato neste mês.');return}let d=new Date();d.setDate(Math.min(c.dueDay,28));let due=d.toISOString().slice(0,10);db.payments.push({id:db.nextPaymentId++,contractId:id,month,dueDate:due,amount:Number(c.rent),status:'Pendente',paidDate:'',method:''});save();alert('Pagamento mensal criado. Confira a data de vencimento.')}
+function openContractForm(){document.getElementById('contractFormPanel').classList.remove('hidden');document.getElementById('contractForm').reset();document.getElementById('contractForm').scrollIntoView({behavior:'smooth',block:'start'})}
+function closeContractForm(){document.getElementById('contractFormPanel').classList.add('hidden')}
+document.getElementById('contractForm').addEventListener('submit',e=>{e.preventDefault();let f=new FormData(e.target),c={id:db.nextContractId++,tenant:f.get('tenant').trim(),phone:f.get('phone').trim(),property:f.get('property').trim(),owner:f.get('owner').trim(),rent:Number(f.get('rent')),dueDay:Number(f.get('dueDay'))};db.contracts.push(c);save();closeContractForm();alert('Contrato cadastrado. Gere o pagamento mensal na lista de contratos.')});
+function deleteContract(id){let c=contract(id);if(!confirm(`Excluir o contrato de ${c.tenant}? Os pagamentos antigos serão mantidos no histórico.`))return;db.contracts=db.contracts.filter(c=>c.id!==id);save()}
+function fmtDate(s){if(!s)return '—';let [y,m,d]=s.split('-');return `${d}/${m}/${y}`}
+function esc(s){return String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+renderAll();
+</script>
+</body>
+</html>
